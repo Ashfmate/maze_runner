@@ -43,3 +43,53 @@ impl Map {
         3
     }
 }
+
+pub struct Tiles {
+    width: usize,
+    height: usize,
+    tiles: String,
+}
+
+impl Tiles {
+    pub fn new(width: usize, tiles: impl Into<String>) -> Self {
+        let tiles = tiles.into();
+        if tiles.len() % width != 0 {
+            panic!("[tiles] argument's length must be a multiple of [width] argument");
+        }
+        let height = tiles.len() / width;
+
+        Self {
+            width,
+            height,
+            tiles,
+        }
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+}
+
+impl From<Tiles> for Vec<char> {
+    fn from(value: Tiles) -> Self {
+        value.tiles.chars().collect()
+    }
+}
+
+impl From<Tiles> for Vec<Vec<char>> {
+    fn from(value: Tiles) -> Self {
+        let mut res = vec![];
+        let mut row = vec![];
+        for tile in value.tiles.chars().enumerate() {
+            row.push(tile.1);
+            if (tile.0 + 1) % value.width() == 0 {
+                res.push(row.drain(..).collect());
+            }
+        }
+        res
+    }
+}
